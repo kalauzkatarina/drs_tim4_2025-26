@@ -1,1 +1,1 @@
-Server service
+ruServer service
