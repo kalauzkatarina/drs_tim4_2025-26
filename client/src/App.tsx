@@ -1,27 +1,46 @@
-import { useState, useEffect } from 'react'
-import { PročitajVrednostPoKljuču } from './helpers/local_storage'
-import KontrolnaTabla from './components/kontrolna_tabla/KontrolnaTabla'
-import AutentifikacionaForma from './components/autentifikacija/AutentifikacionaForma'
+import { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AutentifikacionaForma from './components/autentifikacija/AutentifikacionaForma';
+import UsersList from './components/users/UserList';
 import { authApi } from './api_services/auth/AuthAPIService';
+import EditUserForm from './components/users/EditUserForm';
+import Navbar from './components/Navbar';
+import UserDetails from './components/users/UserDetail';
 
 function App() {
   const [prijavljen, setPrijavljen] = useState<boolean>(false);
+  
+  const uloga = (localStorage.getItem("userRole"));
 
   useEffect(() => {
-    const token = PročitajVrednostPoKljuču('authToken')
-    if (token && token.includes('/')) {
-      setPrijavljen(true)
+    const token = localStorage.getItem("token");
+    if (token) {
+      setPrijavljen(true);
     }
-  }, [])
+  }, []);
 
-  return prijavljen ? (
-    <KontrolnaTabla onLogout={() => setPrijavljen(false)} />
-  ) : (
-    <AutentifikacionaForma
-      authApi={authApi}
-      onLoginSuccess={() => setPrijavljen(true)}
+  return (
+    <div className="App">
+      {prijavljen && <Navbar />}
+
+      <Routes>
+    <Route 
+      path="/" 
+      element={
+        prijavljen 
+          ? (uloga === "ADMINISTRATOR" ? <Navigate to="/users/getAll" /> : <Navigate to="/profile" />)
+          : <AutentifikacionaForma authApi={authApi} onLoginSuccess={() => setPrijavljen(true)} />
+      } 
     />
-  )
+
+    <Route path="/users/getAll" element={uloga === "ADMINISTRATOR" ? <UsersList /> : <Navigate to="/profile" />} />
+
+    <Route path="/profile" element={prijavljen ? <UserDetails /> : <Navigate to="/" />} />
+
+    <Route path="/edit-user/:id" element={prijavljen ? <EditUserForm /> : <Navigate to="/" />} />
+  </Routes>
+    </div>
+  );
 }
 
 export default App;

@@ -1,86 +1,92 @@
 import { useState } from "react";
-import { SačuvajVrednostPoKljuču } from "../../helpers/local_storage";
 import type { AuthFormProps } from "../../types/props/auth_form_props/AuthFormProps";
-import { validacijaPodatakaAuth } from "../../api_services/validators/auth/AuthValidator";
+import { userApi } from "../../api_services/users/UserAPIService";
+import { useNavigate } from "react-router-dom";
+import type { User } from "../../models/users/UserDto";
+import { UserRole } from "../../enums/UserRoles";
 
 export default function AutentifikacionaForma({
   authApi,
   onLoginSuccess,
 }: AuthFormProps) {
-  const [korisnickoIme, setKorisnickoIme] = useState("");
+  const [email, setEmail] = useState(""); 
   const [lozinka, setLozinka] = useState("");
   const [greska, setGreska] = useState("");
   const [jeRegistracija, setJeRegistracija] = useState(false);
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [gender, setGender] = useState("MALE");
+  const [state, setState] = useState("");
+  const [streetName, setStreetName] = useState("");
+  const [streetNumber, setStreetNumber] = useState("");
+  const navigate = useNavigate();
+
   const podnesiFormu = async (e: React.FormEvent) => {
     e.preventDefault();
+    const loginPodaci = { email, lozinka }; 
 
-    const validacija = validacijaPodatakaAuth(korisnickoIme, lozinka);
-    if (!validacija.uspesno) {
-      setGreska(validacija.poruka ?? "Неисправни подаци");
-      return;
+    try {
+        const odgovor = await authApi.prijava(loginPodaci.email, loginPodaci.lozinka);
+
+        if (odgovor.accessToken) {
+            localStorage.setItem("token", odgovor.accessToken);
+            
+            const sviKorisnici = await userApi.getAllUsers();
+            const ja = sviKorisnici.find((u: User) => u.email === loginPodaci.email);
+
+            if (ja && ja.id) {
+                const uloga = (ja as any).role || (ja as any).userRole;
+                console.log("Moja uloga sa servera je:", uloga);
+                
+                localStorage.setItem("userRole", uloga);
+                localStorage.setItem("userId", ja.id.toString());
+
+                onLoginSuccess();
+
+                if (uloga === UserRole.ADMINISTRATOR) {
+                    navigate("/users/getAll");
+                } else {
+                    navigate("/profile");      
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Greška pri prijavi:", error);
+        setGreska("Pogrešan email ili lozinka");
     }
-
-    const odgovor = jeRegistracija
-      ? await authApi.registracija(korisnickoIme, lozinka)
-      : await authApi.prijava(korisnickoIme, lozinka);
-
-    if (odgovor.success && odgovor.data) {
-      const token = `${odgovor.data.korisnickoIme}/${odgovor.data.id}`;
-      SačuvajVrednostPoKljuču("authToken", token);
-      onLoginSuccess();
-    } else {
-      setGreska(odgovor.message);
-      setKorisnickoIme("");
-      setLozinka("");
-    }
-  };
+};
 
   return (
     <div className="form-container">
       <h1>{jeRegistracija ? "Регистрација" : "Пријава"}</h1>
       <form onSubmit={podnesiFormu}>
-        <div className="input-group">
-          <label htmlFor="username">Корисничко име:</label>
-          <input
-            id="username"
-            type="text"
-            value={korisnickoIme}
-            onChange={(e) => setKorisnickoIme(e.target.value)}
-            placeholder="Унесите корисничко име"
-            minLength={3}
-            maxLength={20}
-            required
-          />
-        </div>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+        <input type="password" value={lozinka} onChange={(e) => setLozinka(e.target.value)} placeholder="Лозинка" required />
 
-        <div className="input-group">
-          <label htmlFor="password">Лозинка:</label>
-          <input
-            id="password"
-            type="password"
-            value={lozinka}
-            onChange={(e) => setLozinka(e.target.value)}
-            placeholder="Унесите лозинку"
-            minLength={6}
-            maxLength={20}
-            required
-          />
-        </div>
+        {jeRegistracija && (
+          <>
+            <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Име" required />
+            <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Презиме" required />
+            <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} required />
+            <select value={gender} onChange={(e) => setGender(e.target.value)}>
+              <option value="MALE">Мушки</option>
+              <option value="FEMALE">Женски</option>
+              <option value="OTHER">Остало</option>
+            </select>
+            <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="Држава" required />
+            <input type="text" value={streetName} onChange={(e) => setStreetName(e.target.value)} placeholder="Улица" required />
+            <input type="text" value={streetNumber} onChange={(e) => setStreetNumber(e.target.value)} placeholder="Број" required />
+          </>
+        )}
 
         {greska && <p style={{ color: "red" }}>{greska}</p>}
-
-        <button type="submit">
-          {jeRegistracija ? "Регистрација" : "Пријава"}
-        </button>
+        <button type="submit">{jeRegistracija ? "Региструј се" : "Пријави се"}</button>
       </form>
-      <button
-        onClick={() => setJeRegistracija(!jeRegistracija)}
-        style={{ marginTop: "1rem" }}
-      >
-        {jeRegistracija
-          ? "Имате налог? Пријавите се"
-          : "Немате налог? Региструјте се"}
+
+      <button onClick={() => setJeRegistracija(!jeRegistracija)}>
+        {jeRegistracija ? "Имате налог? Пријавите се" : "Немате налог? Региструјте се"}
       </button>
     </div>
   );

@@ -6,8 +6,10 @@ from Extensions.Bcrypt import bcrypt
 from Routes.UserRoutes import user_bp
 from Auth.JWTManager import jwt
 from Routes.AuthRoutes import auth_bp
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 db.init_app(app)
 bcrypt.init_app(app)

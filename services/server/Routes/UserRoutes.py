@@ -45,7 +45,8 @@ def get_users():
             "email": u.email,
             "firstName": u.firstName,
             "lastName": u.lastName,
-            "role": u.userRole.name
+            "role": u.userRole.name,
+            "state": u.state,
         } for u in users
     ])
 
