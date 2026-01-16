@@ -25,21 +25,58 @@ export default function AutentifikacionaForma({
 
   const podnesiFormu = async (e: React.FormEvent) => {
     e.preventDefault();
-    const loginPodaci = { email, lozinka }; 
+
+    if(jeRegistracija){
+
+        const registerPodaci = {email,lozinka,firstName,lastName,dateOfBirth,gender,state,streetName,streetNumber};
+
+        try {
+
+            const odgovor = await authApi.registracija(registerPodaci.email, registerPodaci.lozinka, registerPodaci.firstName, registerPodaci.lastName, registerPodaci.dateOfBirth, registerPodaci.gender, registerPodaci.state, registerPodaci.streetName, registerPodaci.streetNumber);
+
+            if (odgovor.accessToken) {
+                localStorage.setItem("token", odgovor.accessToken);
+
+                const sviKorisnici = await userApi.getAllUsers();
+                const ja = sviKorisnici.find((u: User) => u.email === loginPodaci.email);
+
+                if (ja && ja.id) {
+                    const uloga = (ja as any).role || (ja as any).userRole;
+                    console.log("Moja uloga sa servera je:", uloga);
+
+                    localStorage.setItem("userRole", uloga);
+                    localStorage.setItem("userId", ja.id.toString());
+
+                    onLoginSuccess();
+
+                    if (uloga === UserRole.ADMINISTRATOR) {
+                        navigate("/users/getAll");
+                    } else {
+                        navigate("/profile");
+                    }
+                }
+            }
+        }catch (error) {
+        console.error("Greška pri registraciji:", error);
+        setGreska("Pogrešan email ili lozinka");
+    }
+
+    }else{
+            const loginPodaci = { email, lozinka };
 
     try {
         const odgovor = await authApi.prijava(loginPodaci.email, loginPodaci.lozinka);
 
         if (odgovor.accessToken) {
             localStorage.setItem("token", odgovor.accessToken);
-            
+
             const sviKorisnici = await userApi.getAllUsers();
             const ja = sviKorisnici.find((u: User) => u.email === loginPodaci.email);
 
             if (ja && ja.id) {
                 const uloga = (ja as any).role || (ja as any).userRole;
                 console.log("Moja uloga sa servera je:", uloga);
-                
+
                 localStorage.setItem("userRole", uloga);
                 localStorage.setItem("userId", ja.id.toString());
 
@@ -48,7 +85,7 @@ export default function AutentifikacionaForma({
                 if (uloga === UserRole.ADMINISTRATOR) {
                     navigate("/users/getAll");
                 } else {
-                    navigate("/profile");      
+                    navigate("/profile");
                 }
             }
         }
@@ -56,6 +93,8 @@ export default function AutentifikacionaForma({
         console.error("Greška pri prijavi:", error);
         setGreska("Pogrešan email ili lozinka");
     }
+    }
+
 };
 
   return (

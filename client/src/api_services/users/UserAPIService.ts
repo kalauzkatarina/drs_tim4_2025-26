@@ -22,6 +22,14 @@ export const userApi = {
     return res.data;
   },
 
+  async createUser(userData: User): Promise<User>{
+    const token = localStorage.getItem("token");
+    const res = await axios.post(`${API_URL}/register`,userData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data;
+  },
+
   async deleteUser(id: number): Promise<any> {
     const token = localStorage.getItem("token");
     const res = await axios.delete(`${API_URL}/${id}`, {
