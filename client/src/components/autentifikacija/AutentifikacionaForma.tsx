@@ -4,6 +4,8 @@ import { userApi } from "../../api_services/users/UserAPIService";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../../models/users/UserDto";
 import { UserRole } from "../../enums/UserRoles";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 export default function AutentifikacionaForma({
   authApi,
@@ -29,184 +31,203 @@ export default function AutentifikacionaForma({
 
     setGreska("");
 
-    if(jeRegistracija){
+    if (jeRegistracija) {
 
-        const registerPodaci = {email,lozinka,firstName,lastName,dateOfBirth,gender,state,streetName,streetNumber};
+      const registerPodaci = { email, lozinka, firstName, lastName, dateOfBirth, gender, state, streetName, streetNumber };
 
-        try {
+      try {
 
-            const odgovor = await authApi.register(registerPodaci.email, registerPodaci.lozinka, registerPodaci.firstName, registerPodaci.lastName, registerPodaci.dateOfBirth, registerPodaci.gender, registerPodaci.state, registerPodaci.streetName, registerPodaci.streetNumber);
+        const odgovor = await authApi.register(registerPodaci.email, registerPodaci.lozinka, registerPodaci.firstName, registerPodaci.lastName, registerPodaci.dateOfBirth, registerPodaci.gender, registerPodaci.state, registerPodaci.streetName, registerPodaci.streetNumber);
 
-            if (odgovor.accessToken) {
-                localStorage.setItem("token", odgovor.accessToken);
+        if (odgovor.accessToken) {
+          localStorage.setItem("token", odgovor.accessToken);
 
-                const sviKorisnici = await userApi.getAllUsers();
-                const ja = sviKorisnici.find((u: User) => u.email === registerPodaci.email);
+          const sviKorisnici = await userApi.getAllUsers();
+          const ja = sviKorisnici.find((u: User) => u.email === registerPodaci.email);
 
-                if (ja && ja.id) {
-                    const uloga = (ja as any).role || (ja as any).userRole;
-                    console.log("Moja uloga sa servera je:", uloga);
+          if (ja && ja.id) {
+            const uloga = (ja as any).role || (ja as any).userRole;
+            console.log("Moja uloga sa servera je:", uloga);
 
-                    localStorage.setItem("userRole", uloga);
-                    localStorage.setItem("userId", ja.id.toString());
+            localStorage.setItem("userRole", uloga);
+            localStorage.setItem("userId", ja.id.toString());
 
-                    onLoginSuccess();
+            onLoginSuccess();
 
-                    navigate("/profile");
-                }
-            }
-        }catch (error) {
-        console.error("Greška pri registraciji:", error);
-        setGreska("Pogrešan email ili lozinka");
-    }
-
-    }else{
-
-    try {
-      const odgovor = await authApi.login(email, lozinka);
-
-      if (odgovor.accessToken) {
-        localStorage.setItem("token", odgovor.accessToken);
-
-        const sviKorisnici = await userApi.getAllUsers();
-        const ja = sviKorisnici.find((u: User) => u.email === email);
-
-        if (ja && ja.id) {
-          const uloga = (ja as any).role || (ja as any).userRole;
-
-          localStorage.setItem("userRole", uloga);
-          localStorage.setItem("userId", ja.id.toString());
-
-          onLoginSuccess();
-
-          if (uloga === UserRole.ADMINISTRATOR) {
-            navigate("/users/getAll");
-          } else {
             navigate("/profile");
           }
         }
+      } catch (error) {
+        console.error("Greška pri registraciji:", error);
+        setGreska("Pogrešan email ili lozinka");
       }
-    } catch {
-      setGreska("Invalid email or password");
-    }
-  };
-}
+
+    } else {
+
+      try {
+        const odgovor = await authApi.login(email, lozinka);
+
+        if (odgovor.accessToken) {
+          localStorage.setItem("token", odgovor.accessToken);
+
+          const sviKorisnici = await userApi.getAllUsers();
+          const ja = sviKorisnici.find((u: User) => u.email === email);
+
+          if (ja && ja.id) {
+            const uloga = (ja as any).role || (ja as any).userRole;
+
+            localStorage.setItem("userRole", uloga);
+            localStorage.setItem("userId", ja.id.toString());
+
+            onLoginSuccess();
+
+            if (uloga === UserRole.ADMINISTRATOR) {
+              navigate("/users/getAll");
+            } else {
+              navigate("/profile");
+            }
+          }
+        }
+      } catch {
+        setGreska("Invalid email or password");
+      }
+    };
+  }
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-gray-900 px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-
-        <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-white">
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4 py-12">
+      <div className="w-full max-w-md bg-gray-700 rounded-xl shadow-lg p-6">
+        <h2 className="text-center text-2xl font-bold text-white mb-6">
           {jeRegistracija ? "Create your account" : "Sign in"}
         </h2>
-      </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={podnesiFormu} className="space-y-6">
+        <form onSubmit={podnesiFormu} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-100">
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                type="email"
-                value={email}
-                placeholder="Email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10 focus:outline-2 focus:outline-indigo-500"
-              />
-            </div>
+            <label className="block text-sm font-medium text-gray-100 mb-1">Email address</label>
+            <input
+              type="email"
+              value={email}
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-100">
-              Password
-            </label>
-            <div className="mt-2">
-              <input
-                type="password"
-                value={lozinka}
-                placeholder="Password"
-                onChange={(e) => setLozinka(e.target.value)}
-                required
-                className="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10 focus:outline-2 focus:outline-indigo-500"
-              />
-            </div>
+            <label className="block text-sm font-medium text-gray-100 mb-1">Password</label>
+            <input
+              type="password"
+              value={lozinka}
+              placeholder="Password"
+              onChange={(e) => setLozinka(e.target.value)}
+              required
+              className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
           </div>
 
           {jeRegistracija && (
             <>
               <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="First name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-1/2 rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-1/2 rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                  required
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-100 mb-1">First name</label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="First name"
+                    required
+                    className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-sm font-medium text-gray-100 mb-1">Last name</label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Last name"
+                    required
+                    className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-100 mb-1">Date of birth</label>
+                <Flatpickr
+                  value={dateOfBirth}
+                  onChange={(dates: Date[]) => {
+                    if (dates.length > 0) setDateOfBirth(dates[0].toISOString().split("T")[0]);
+                  }}
+                  options={{
+                    dateFormat: "Y-m-d",
+                    altInput: true,
+                    altFormat: "F j, Y",
+                    allowInput: true,
+                    maxDate: "today",
+                    minDate: "1900-01-01",
+                    monthSelectorType: "dropdown",
+                    // @ts-ignore
+                    yearSelectorType: "dropdown",
+                  }}
+                  className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Select date"
                 />
               </div>
 
-              <input
-                type="date"
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-100 mb-1">Gender</label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                </select>
+              </div>
 
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-              >
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="State"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                required
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-100 mb-1">State</label>
+                <input
+                  type="text"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  placeholder="State"
+                  required
+                  className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
 
               <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Street"
-                  value={streetName}
-                  onChange={(e) => setStreetName(e.target.value)}
-                  className="w-2/3 rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="No."
-                  value={streetNumber}
-                  onChange={(e) => setStreetNumber(e.target.value)}
-                  className="w-1/3 rounded-md bg-white/5 px-3 py-2 text-white outline outline-1 outline-white/10"
-                  required
-                />
+                <div className="w-2/3">
+                  <label className="block text-sm font-medium text-gray-100 mb-1">Street</label>
+                  <input
+                    type="text"
+                    value={streetName}
+                    onChange={(e) => setStreetName(e.target.value)}
+                    placeholder="Street"
+                    required
+                    className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="w-1/3">
+                  <label className="block text-sm font-medium text-gray-100 mb-1">Number</label>
+                  <input
+                    type="text"
+                    value={streetNumber}
+                    onChange={(e) => setStreetNumber(e.target.value)}
+                    placeholder="Number"
+                    required
+                    className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
               </div>
             </>
           )}
 
-          {greska && (
-            <p className="text-center text-sm text-red-400">{greska}</p>
-          )}
+          {greska && <p className="text-center text-sm text-red-400">{greska}</p>}
 
           <button
             type="submit"
@@ -216,7 +237,7 @@ export default function AutentifikacionaForma({
           </button>
         </form>
 
-        <p className="mt-10 text-center text-sm text-gray-400">
+        <p className="mt-4 text-center text-sm text-gray-300">
           {jeRegistracija ? "Already have an account?" : "Not a member?"}{" "}
           <button
             onClick={() => setJeRegistracija(!jeRegistracija)}
@@ -227,5 +248,6 @@ export default function AutentifikacionaForma({
         </p>
       </div>
     </div>
+
   );
 }
