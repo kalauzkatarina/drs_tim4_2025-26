@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { userApi } from "../../api_services/users/UserAPIService";
 import type { User } from "../../models/users/UserDto";
 import { UserRole } from "../../enums/UserRoles";
-import type { UserRoleType } from "../../enums/UserRoles";
 import {format} from "date-fns";
 
 export default function EditUserForm() {
@@ -194,11 +193,11 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   <div>
                     <label className="mb-1 block text-sm text-gray-300">User role</label>
                     <select
-                      value={user.userRole}
+                      value={user.role}
                       onChange={(e) =>
                         setUser({
                           ...user,
-                          userRole: Number(e.target.value) as UserRoleType,
+                          role: e.target.value as "USER" | "MANAGER" | "ADMINISTRATOR",
                         })
                       }
                       className="w-full rounded-lg bg-gray-900/80 px-4 py-2.5 text-white

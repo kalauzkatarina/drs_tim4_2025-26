@@ -79,28 +79,30 @@ def delete_user(user_id):
 def update_user(user_id):
     try:
         dto_update = UserUpdateDTO(request.json)
-        print(dto_update.to_dict())
 
-        old_user = UserService.get_user_by_email(dto_update.to_dict()['email'])
+        old_user = UserService.get_user_by_id(user_id)
         old_role = old_user.userRole
+
         updated_user = UserService.update_user(user_id, dto_update.to_dict())
 
         if not updated_user:
             return jsonify({"error": "User not found"}), 404
-        else:
-            if dto_update.to_dict()['userRole'] == "MANAGER"  and old_role == UserRoles.USER:
-                """Ovde saljemo mejl za uspesno azuriranje userRole korisnika"""
-                requests.post('http://127.0.0.1:4001/mail/send',
-                              json={
-                                    "subject": "Promotion!!!",
-                                    "to": [updated_user.email],
-                                    "body": "Hello, " + updated_user.firstName + " " + updated_user.lastName + " you are promoted to Manager!! Congratulations!"
 
-                              })
+        if (
+            dto_update.to_dict().get("userRole") == "MANAGER"
+            and old_role == UserRoles.USER
+        ):
+            requests.post(
+                "http://127.0.0.1:4001/mail/send",
+                json={
+                    "subject": "Promotion!!!",
+                    "to": [updated_user.email],
+                    "body": "Hello, " + updated_user.firstName + " " + updated_user.lastName + " you are promoted to Manager!! Congratulations!"
+                }
+            )
 
+        return jsonify(UserResponseDTO(updated_user).to_dict()), 200
 
-            return jsonify(UserResponseDTO(updated_user).to_dict()), 200
-        
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:

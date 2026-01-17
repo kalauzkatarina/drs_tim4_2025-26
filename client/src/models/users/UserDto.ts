@@ -1,4 +1,3 @@
-import type { UserRoleType } from "../../enums/UserRoles";
 
 export interface User {
   id: number;
@@ -12,6 +11,6 @@ export interface User {
   streetName: string;
   streetNumber: string;
   accountBalance: number;
-  userRole: UserRoleType;
+  role: "USER" | "MANAGER" | "ADMINISTRATOR";
   userImageUrl: string;
 }

@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userApi } from "../../api_services/users/UserAPIService";
 import type { User } from "../../models/users/UserDto";
-import type { UserRoleType } from "../../enums/UserRoles";
-import { UserRole } from "../../enums/UserRoles";
 
 export default function UsersList() {
   const [users, setUsers] = useState<User[]>([]);
@@ -22,14 +20,12 @@ export default function UsersList() {
     loadUsers();
   }, []);
 
-  const handleRoleChange = async (userId: number, newRoleValue: number) => {
+  const handleRoleChange = async (userId: number, newRole: string) => {
     try {
-      const roleToUpdate = newRoleValue as UserRoleType;
-      await userApi.updateUser(userId, { userRole: roleToUpdate });
-
+      await userApi.updateUser(userId, { userRole: newRole });
       alert("Role successfully changed.");
       loadUsers();
-    } catch (error) {
+    } catch {
       alert("Error while changing the role on server.");
     }
   };
@@ -56,14 +52,17 @@ export default function UsersList() {
                   <td className="px-4 py-3 text-gray-300">{u.email}</td>
                   <td className="px-4 py-3">
                     <select
-                      value={u.userRole}
-                      onChange={(e) => handleRoleChange(u.id, Number(e.target.value))}
-                      className="block rounded-md bg-gray-800 px-3 py-1 text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      value={u.role}
+                      onChange={(e) =>
+                        handleRoleChange(u.id, e.target.value)
+                      }
+                      className="rounded-md bg-gray-800 px-3 py-1 text-white outline-none focus:ring-2 focus:ring-indigo-500"
                     >
-                      <option value={UserRole.ADMINISTRATOR}>Administrator</option>
-                      <option value={UserRole.MANAGER}>Manager</option>
-                      <option value={UserRole.USER}>User</option>
+                      <option value="USER">User</option>
+                      <option value="MANAGER">Manager</option>
+                      <option value="ADMINISTRATOR">Administrator</option>
                     </select>
+
                   </td>
 
                   <td className="px-4 py-3">
