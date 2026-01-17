@@ -28,7 +28,24 @@ export default function UserDetails() {
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 text-white">
       <div className="mx-auto max-w-md rounded-lg border border-white/10 bg-white/5 p-6">
-        <h2 className="mb-6 text-2xl font-bold">My Profile</h2>
+
+        <div className="mb-6 flex items-center gap-3">
+          <h2 className="text-2xl font-bold">My Profile</h2>
+
+          {user.userImageUrl ? (
+            <img
+              alt="User avatar"
+              src={user.userImageUrl}
+              className="h-20 w-20 shrink-0 rounded-full
+                border border-white/10 bg-gray-700 object-cover"
+            />
+          ) : (
+            <span className="text-sm text-gray-400 italic">
+              No profile image
+            </span>
+          )}
+        </div>
+
         <div>
           <p>
             <span className="text-gray-400">Name:</span>{" "}
@@ -75,15 +92,10 @@ export default function UserDetails() {
             <span className="font-medium">{user.userRole}</span>
           </p>
 
-          {user.userImageUrl ? <img
-              alt=""
-              src={user.userImageUrl}
-              className="size-5 shrink-0 rounded-full bg-gray-700 outline -outline-offset-1 outline-white/10"
-            /> : <span className="text-gray-400">This user does not have user image</span>}
+
 
         </div>
-
-        <button onClick={() => navigate(`/edit-user/${user.id}`)} 
+        <button onClick={() => navigate(`/edit-user/${userId}`)}
           className="mt-6 w-full rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold hover:bg-indigo-400">
           Change
         </button>

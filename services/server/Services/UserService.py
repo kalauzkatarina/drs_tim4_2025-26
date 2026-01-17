@@ -70,7 +70,7 @@ class UserService:
         if "password" in data:
             user.password_hash = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
 
-        fields_for_update = ["firstName", "lastName", "dateOfBirth", "gender", "state", "streetName", "streetNumber", "accountBalance", "userRole"]
+        fields_for_update = ["firstName", "lastName", "dateOfBirth", "gender", "state", "streetName", "streetNumber", "accountBalance", "userRole","userImageUrl"]
 
         for field in fields_for_update:
             if field in data:

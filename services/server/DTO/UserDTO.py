@@ -44,6 +44,7 @@ class UserUpdateDTO:
         self.streetNumber = data.get("streetNumber")
         self.accountBalance = data.get("accountBalance", 0.0)
         self.userRole = data.get("userRole")
+        self.userImageUrl = data.get("userImageUrl")
 
 
     def to_dict(self):
@@ -61,5 +62,6 @@ class UserProfileDTO:
         self.streetNumber = user.streetNumber
         self.userImageUrl = user.userImageUrl
         self.userRole = user.userRole.name
+        self.accountBalance = user.accountBalance
     def to_dict(self):
         return self.__dict__

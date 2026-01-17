@@ -79,6 +79,8 @@ def delete_user(user_id):
 def update_user(user_id):
     try:
         dto_update = UserUpdateDTO(request.json)
+        print(dto_update.to_dict())
+
         old_user = UserService.get_user_by_email(dto_update.to_dict()['email'])
         old_role = old_user.userRole
         updated_user = UserService.update_user(user_id, dto_update.to_dict())
