@@ -24,20 +24,20 @@ export default function UsersList() {
 
   const handleRoleChange = async (userId: number, newRoleValue: number) => {
     try {
-    const roleToUpdate = newRoleValue as UserRoleType;
-    await userApi.updateUser(userId, { userRole: roleToUpdate });
-    
-    alert("Role successfully changed.");
-    loadUsers(); 
-  } catch (error) {
-    alert("Error while changing the role on server.");
-  }
+      const roleToUpdate = newRoleValue as UserRoleType;
+      await userApi.updateUser(userId, { userRole: roleToUpdate });
+
+      alert("Role successfully changed.");
+      loadUsers();
+    } catch (error) {
+      alert("Error while changing the role on server.");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 px-6 py-12 text-white">
       <div className="mx-auto max-w-6xl">
-        <h2 className="mb-8 text-2xl font-bold tracking-tight">User List (Admin panel)</h2>
+        <h2 className="mb-8 text-2xl font-bold tracking-tight">Admin panel</h2>
         <div className="overflow-x-auto rounded-lg border border-white/10">
           <table className="w-full border-collapse text-sm">
             <thead className="bg-white/5">
@@ -55,10 +55,10 @@ export default function UsersList() {
                   <td className="px-4 py-3">{u.firstName} {u.lastName}</td>
                   <td className="px-4 py-3 text-gray-300">{u.email}</td>
                   <td className="px-4 py-3">
-                    <select 
-                      value={u.userRole} 
+                    <select
+                      value={u.userRole}
                       onChange={(e) => handleRoleChange(u.id, Number(e.target.value))}
-                      className="rounded-md bg-white/5 px-3 py-1 text-white outline outline-1 outline-white/10 focus:outline-2 focus:outline-indigo-500"
+                      className="block rounded-md bg-gray-800 px-3 py-1 text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                       <option value={UserRole.ADMINISTRATOR}>Administrator</option>
                       <option value={UserRole.MANAGER}>Manager</option>
@@ -67,14 +67,22 @@ export default function UsersList() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <button onClick={() => navigate(`/edit-user/${u.id}`)} className="rounded-md bg-indigo-500 px-3 py-1 text-sm font-semibold hover:bg-indigo-400">Change</button>
-                    <button 
-                      onClick={() => u.id && userApi.deleteUser(u.id).then(loadUsers)} 
-                      className="rounded-md bg-indigo-500/80 px-3 py-1 text-sm font-semibold hover:bg-indigo-500"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate(`/edit-user/${u.id}`)}
+                        className="rounded-md bg-indigo-500 px-3 py-1 text-sm font-semibold hover:bg-indigo-400"
+                      >
+                        Change
+                      </button>
+                      <button
+                        onClick={() => u.id && userApi.deleteUser(u.id).then(loadUsers)}
+                        className="rounded-md bg-pink-500 px-3 py-1 text-sm font-semibold hover:bg-pink-400 text-white"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
+
                 </tr>
               ))}
             </tbody>
