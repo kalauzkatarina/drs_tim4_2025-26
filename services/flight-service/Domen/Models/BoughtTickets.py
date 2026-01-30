@@ -19,7 +19,8 @@ class BoughtTickets(db.Model):
             "ticketPrice": self.ticketPrice,
             "cancelled": self.cancelled,
             "ticketDescription": self.ticketDescription,
-            "ticketDate": self.ticketDate,
+            "ticketDate": self.ticketDate.strftime("%Y-%m-%d %H:%M:%S") if self.ticketDate else None,
+            #proverava da li nije null, ako je null bice None
         }
 
     def __repr__(self):

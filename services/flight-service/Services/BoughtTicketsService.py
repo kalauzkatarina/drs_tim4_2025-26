@@ -21,8 +21,6 @@ class BougthTicketsService:
 
         ticket_data = ticket.to_dict()
 
-
-        ticket_data["ticketDate"] = ticket.ticketDate.strftime("%Y-%m-%d %H:%M:%S")
         redis_client.set(cache_key,json.dumps(ticket_data),ex=300)
 
         return ticket_data
@@ -54,20 +52,31 @@ class BougthTicketsService:
     def cancel(id):
 
         ticket = BoughtTickets.query.get(id)
-        cache_key = f"ticket:{ticket.id}"
-        print(ticket.to_dict())
+
         if not ticket:
             return False
 
         ticket.cancelled = True
-        ticket.ticketDate = ticket.ticketDate.strftime("%Y-%m-%d %H:%M:%S")
-        cached_ticket = redis_client.get(cache_key)
 
-        if cached_ticket:
-            redis_client.set(cache_key, json.dumps(ticket.to_dict()), ex=300)
+        cache_key = f"ticket:{ticket.id}"
 
+        redis_client.delete(cache_key)
 
         db.session.commit()
         return True
+
+    @staticmethod
+    def cancelAllFlights(flightId):
+
+        tickets = BoughtTickets.query.filter_by(flightId=flightId).all()
+
+        for ticket in tickets:
+            ticket.cancelled = True
+            redis_client.delete(f"ticket:{ticket.id}")
+
+        db.session.commit()
+        return True
+
+
 
 

@@ -3,6 +3,7 @@ from Database.InitializationDataBase import db
 from Domen.Config.config import  Config
 from Routes.AirCompanyRoutes import companies_bp
 from Routes.BoughtTicketsRoutes import ticktes_bp
+from Routes.FlightsRoutes import flights_bp
 from Domen.Models.AirCompany import AirCompanies
 from Domen.Models.BoughtTickets import BoughtTickets
 from Domen.Models.Flights import  Flights
@@ -13,6 +14,7 @@ db.init_app(app)
 
 app.register_blueprint(companies_bp)
 app.register_blueprint(ticktes_bp)
+app.register_blueprint(flights_bp)
 
 if __name__ == "__main__":
     with app.app_context():

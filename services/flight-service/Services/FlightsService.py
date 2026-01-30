@@ -1,6 +1,9 @@
+import json
+
 from Domen.Models.Flights import  Flights
 from Database.InitializationDataBase import db
-from Config.redis_client import redis_client
+from Domen.Config.redis_client import redis_client
+from Services.BoughtTicketsService import BougthTicketsService
 
 class FlightsService:
     @staticmethod
@@ -15,13 +18,14 @@ class FlightsService:
         cached_flight = redis_client.get(cache_key)
 
         if cached_flight:
-            return cached_flight
+            return json.loads(cached_flight)
 
         flight = Flights.query.get(flight_id)
 
-        redis_client.set(cache_key, flight)
+        flight_data = flight.to_dict()
 
-        return flight
+        redis_client.set(cache_key, json.dumps(flight_data),ex=300)
+        return flight_data
 
     @staticmethod
     def get_all_flights_by_date(date):
@@ -29,28 +33,42 @@ class FlightsService:
 
     @staticmethod
     def create_flight(flight):
-        db.session.add(flight)
+
+        newFlight = Flights(
+            name=flight.name,
+            airCompanyId=flight.airCompanyId,
+            flightDuration=flight.flightDuration,
+            currentFlightDuration=flight.currentFlightDuration,
+            departureTime=flight.departureTime,
+            departureAirport=flight.departureAirport,
+            arrivalAirport=flight.arrivalAirport,
+            ticketPrice=flight.ticketPrice,
+            createdBy=flight.createdBy,
+        )
+
+        db.session.add(newFlight)
         db.session.commit()
-        return flight
+        return newFlight.to_dict()
 
     @staticmethod
     def delete_flight(flight_id):
 
         flight = Flights.query.get(flight_id)
+
+        if not flight:
+            return False
+
+        BougthTicketsService.cancelAllFlights(flight_id)
+
+        flight.cancelled = True
+
+
         cache_key = f"flight:{flight_id}"
 
-        if flight:
-            db.session.delete(flight)
-            db.session.commit()
+        redis_client.delete(cache_key)
 
-            cached_flight = redis_client.get(cache_key)
-
-            if cached_flight:
-                db.session.delete(cached_flight)
-
-            return True
-        else:
-            return False
+        db.session.commit()
+        return True
 
     @staticmethod
     def update_flight(flight_id, data):
@@ -61,18 +79,20 @@ class FlightsService:
         if flight is None:
             return None
 
-        for key, value in data.items():
-            setattr(flight, key, value)
+        flight.name = data.name
+        flight.airCompanyId = data.airCompanyId
+        flight.flightDuration = data.flightDuration
+        flight.currentFlightDuration = data.currentFlightDuration
+        flight.departureTime = data.departureTime
+        flight.departureAirport = data.departureAirport
+        flight.arrivalAirport = data.arrivalAirport
+        flight.ticketPrice = data.ticketPrice
+        flight.createdBy = data.createdBy
 
-
-        #ako postoji u kesu onda ga azuriraj
-        cache = redis_client.get(cache_key)
-
-        if cache:
-            redis_client.set(cache_key, flight)
 
         db.session.commit()
-        return flight
+        redis_client.delete(cache_key)
+        return flight.to_dict()
 
     @staticmethod
     def get_flights_by_air_company(air_company_id):

@@ -7,7 +7,7 @@ class Flights(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50),nullable=False)
 
-    airCompany_id = db.Column(db.Integer,db.ForeignKey("AirCompanies.id",ondelete="CASCADE"))
+    airCompanyId = db.Column(db.Integer,db.ForeignKey("AirCompanies.id",ondelete="CASCADE"))
     airCompany = db.relationship("AirCompanies")
 
     flightDuration = db.Column(db.Integer,nullable=False,default=0)
@@ -19,6 +19,8 @@ class Flights(db.Model):
 
     createdBy = db.Column(db.Integer,nullable=False,default=0)
 
+    cancelled = db.Column(db.Boolean,nullable=False,default=False)
+
     db.relationship("BoughtTickets",back_populates="flight")
 
     def to_dict(self):
@@ -27,7 +29,7 @@ class Flights(db.Model):
             "name": self.name,
             "flightDuration": self.flightDuration,
             "currentFlightDuration": self.currentFlightDuration,
-            "departureTime": self.departureTime,
+            "departureTime": self.departureTime.strftime("%Y-%m-%d %H:%M:%S") if self.departureTime else None,
             "departureAirport": self.departureAirport,
             "arrivalAirport": self.arrivalAirport,
             "ticketPrice": self.ticketPrice,
