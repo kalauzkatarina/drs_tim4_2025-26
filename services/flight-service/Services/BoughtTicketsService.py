@@ -2,6 +2,7 @@ import json
 from Domen.Models.BoughtTickets import BoughtTickets
 from Database.InitializationDataBase import db
 from Domen.Config.redis_client import redis_client
+from workers.celery_client import notify_ticket_cancel,notify_flight_cancelled
 
 class BougthTicketsService:
     @staticmethod
@@ -57,12 +58,12 @@ class BougthTicketsService:
             return False
 
         ticket.cancelled = True
+        db.session.commit()
 
         cache_key = f"ticket:{ticket.id}"
 
         redis_client.delete(cache_key)
-
-        db.session.commit()
+        notify_ticket_cancel(ticket.userId,ticket.flightId)
         return True
 
     @staticmethod
@@ -75,6 +76,9 @@ class BougthTicketsService:
             redis_client.delete(f"ticket:{ticket.id}")
 
         db.session.commit()
+
+        notify_flight_cancelled(flightId)
+
         return True
 
 
