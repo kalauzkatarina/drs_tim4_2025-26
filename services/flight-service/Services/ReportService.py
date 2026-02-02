@@ -5,6 +5,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from workers.celery_client import notify_report_generated
+from Services.AirCompanyService import AirCompanyService
 
 
 class ReportService:
@@ -35,9 +36,13 @@ class ReportService:
         data = [["Name", "Company", "From", "To", "Departure", "Price"]]
 
         for f in flights:
+            company_id = f.get('airCompanyId')
+            company_data = AirCompanyService.get_by_id(company_id)
+            company_name = company_data.get('name') if company_data else f"ID: {company_id}"
+
             row = [
                 f.get('name', 'N/A'),
-                f.get('id', 'N/A'),
+                company_name,
                 f.get('departureAirport', 'N/A'),
                 f.get('arrivalAirport', 'N/A'),
                 str(f.get('departureTime', 'N/A'))[:16],

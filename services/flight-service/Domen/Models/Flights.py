@@ -27,6 +27,7 @@ class Flights(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "airCompanyId": self.airCompanyId,
             "flightDuration": self.flightDuration,
             "currentFlightDuration": self.currentFlightDuration,
             "departureTime": self.departureTime.strftime("%Y-%m-%d %H:%M:%S") if self.departureTime else None,
