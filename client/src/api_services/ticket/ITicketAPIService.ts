@@ -1,7 +1,8 @@
+import type { TicketCreateDto } from "../../models/ticket/TicketCreateDto";
 import type { Ticket } from "../../models/ticket/TicketDto";
 
 export interface ITicketAPIService {
-    createTicket(data: Ticket): Promise<Ticket>;
+    createTicket(data: TicketCreateDto): Promise<Ticket>;
     getTicketByID(id: number): Promise<Ticket>;
     getTicketsByUser(userId: number): Promise<Ticket[]>;
     getTicketsByFlight(flightId: number): Promise<Ticket[]>;

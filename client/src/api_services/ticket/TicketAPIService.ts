@@ -3,7 +3,7 @@ import type { TicketCreateDto } from "../../models/ticket/TicketCreateDto";
 import type { Ticket } from "../../models/ticket/TicketDto";
 import type { ITicketAPIService } from "./ITicketAPIService";
 
-const API_URL = `${import.meta.env.VITE_GATEWAY_URL}/tickets`;
+const API_URL = `${import.meta.env.VITE_GATEWAY_URL}` + "tickets";
 
 export const ticketsApi: ITicketAPIService = {
     async createTicket(data: TicketCreateDto): Promise<Ticket> {
