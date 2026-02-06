@@ -9,6 +9,9 @@ import UserDetails from './components/users/UserDetail';
 import FlightList from './components/flights/FlightList';
 import CreateFlight from './components/flights/CreateFlight';
 import EditFlight from './components/flights/EditFlight';
+import TicketList from './components/tickets/TicketList';
+import CreateTicket from './components/tickets/CreateTicket';
+import EditTicket from './components/tickets/EditTicket';
 
 function App() {
   const [prijavljen, setPrijavljen] = useState<boolean>(false);
@@ -46,6 +49,9 @@ function App() {
     <Route path="/create-flight" element={prijavljen? <CreateFlight/> : <Navigate to="/"/>}/>
     <Route path="/edit-flight/:id" element={prijavljen ? <EditFlight/> : <Navigate to="/"/>}/>
 
+    <Route path="/my-tickets" element={<TicketList/>}/>
+    <Route path="/create-ticket" element={prijavljen ? <CreateTicket/> : <Navigate to="/"/>}/>
+    <Route path="/edit-ticket/:id" element={prijavljen ? <EditTicket/> : <Navigate to="/"/>}/>
   </Routes>
     </div>
   );

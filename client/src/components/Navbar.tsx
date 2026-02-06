@@ -43,6 +43,7 @@ export default function Navbar() {
           </button>
 
           <button onClick={() => navigate("/flights")}>Flights</button>
+          <button onClick={() => navigate("/my-tickets")}>My Tickets</button>
           {localStorage.getItem("userRole") !== "USER" && (
             <>
               <button onClick={() => navigate("/create-flight")}>New Flight</button>
