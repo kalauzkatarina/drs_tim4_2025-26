@@ -3,7 +3,7 @@ import type { IFlightAPIService } from "./IFlightAPIService";
 import type { Flight } from "../../models/flight/FlightDto";
 import type { FlightCreateDto } from "../../models/flight/FlightCreateDto";
 
-const API_URL: string = import.meta.env.VITE_GATEWAY_URL + "flights";
+const API_URL = `${import.meta.env.VITE_GATEWAY_URL}/gateway/flights`;
 
 export const flightApi: IFlightAPIService = {
     async getAllFlights(): Promise<Flight[]> {
@@ -20,7 +20,7 @@ export const flightApi: IFlightAPIService = {
     },
     async getFlightById(id: number): Promise<Flight> {
         try {
-            const res = await axios.get<Flight>(`${API_URL}/getFlight/${id}`);
+            const res = await axios.get<Flight>(`${API_URL}/${id}`);
             return res.data;
         } catch (error) {
             let message = "Error while fetching flight.";

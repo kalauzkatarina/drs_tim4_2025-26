@@ -3,7 +3,7 @@ import type { TicketCreateDto } from "../../models/ticket/TicketCreateDto";
 import type { Ticket } from "../../models/ticket/TicketDto";
 import type { ITicketAPIService } from "./ITicketAPIService";
 
-const API_URL = `${import.meta.env.VITE_GATEWAY_URL}` + "tickets";
+const API_URL = `${import.meta.env.VITE_GATEWAY_URL}/gateway/tickets`;
 
 export const ticketsApi: ITicketAPIService = {
     async createTicket(data: TicketCreateDto): Promise<Ticket> {
@@ -37,7 +37,7 @@ export const ticketsApi: ITicketAPIService = {
     },
     async getTicketsByUser(userId: number): Promise<Ticket[]> {
         try {
-            const res = await axios.get<Ticket[]>(`${API_URL}/users-tickets/${userId}`);
+            const res = await axios.get<Ticket[]>(`${API_URL}/user-tickets/${userId}`);
             return res.data;
         } catch (error) {
             let message = "Error while fetching user tickets.";
@@ -47,9 +47,9 @@ export const ticketsApi: ITicketAPIService = {
             throw new Error(message);
         }
     },
-    async getTicketsByFlight(flightId: number): Promise<Ticket[]> {
+    async getTicketsByFlight(ticketId: number): Promise<Ticket[]> {
         try {
-            const res = await axios.get<Ticket[]>(`${API_URL}/flights-tickets/${flightId}`);
+            const res = await axios.get<Ticket[]>(`${API_URL}/flights-tickets/${ticketId}`);
             return res.data;
         } catch (error) {
             let message = "Error while fecthing flight tickets.";
@@ -68,7 +68,7 @@ export const ticketsApi: ITicketAPIService = {
                 }
             });
         } catch (error) {
-            let message = "Error while creating ticket.";
+            let message = "Error while cancelling ticket.";
             if (axios.isAxiosError(error)) {
                 message = error.response?.data?.message || message;
             }
