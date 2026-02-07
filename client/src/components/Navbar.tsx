@@ -13,15 +13,15 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-[100] flex items-center justify-between bg-[#0f172a]/80 backdrop-blur-xl px-8 py-4 text-white border-b border-white/10 shadow-lg">
-      
+
       <div className="flex items-center gap-8">
-        <span 
+        <span
           onClick={() => navigate("/")}
           className="cursor-pointer text-xl font-black tracking-tighter italic uppercase text-white hover:text-blue-400 transition-colors"
         >
-        My<span className="text-blue-500">Application</span>
+          My<span className="text-blue-500">Application</span>
         </span>
-        
+
         <div className="flex items-center gap-2">
           {role === "ADMINISTRATOR" && (
             <button
@@ -42,14 +42,37 @@ export default function Navbar() {
             My Profile
           </button>
 
-          <button onClick={() => navigate("/flights")}>Flights</button>
-          <button onClick={() => navigate("/my-tickets")}>My Tickets</button>
-          <button onClick={() => navigate("/create-ticket")}>Create Ticket</button>
-          <button onClick={() => navigate("/air-companies")}>Airlines</button>
+          <button 
+            onClick={() => navigate("/flights")}
+            className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+          >
+            Flights
+          </button>
+
+          <button 
+            onClick={() => navigate("/my-tickets")} 
+            className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+          >
+            My Tickets
+          </button>
+
+          <button 
+            onClick={() => navigate("/create-ticket")} 
+            className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+          >
+            Create Ticket
+          </button>
+          
+          <button 
+            onClick={() => navigate("/air-companies")} 
+            className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+          >
+            Airlines
+          </button>
           {localStorage.getItem("userRole") !== "USER" && (
             <>
-              <button onClick={() => navigate("/create-flight")}>New Flight</button>
-              <button onClick={() => navigate("/create-airline")}>New Airline</button>
+              <button onClick={() => navigate("/create-flight")} className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all">New Flight</button>
+              <button onClick={() => navigate("/create-airline")} className="rounded-full px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-white/5 hover:text-white transition-all">New Airline</button>
             </>
           )}
         </div>

@@ -7,7 +7,7 @@ from Domen.Enums.UserRoles import UserRoles
 from Domen.Config.redis_client import redis_client
 from Domen.Config.config import Config
 
-gateway_bp = Blueprint("gateway_bp", __name__, url_prefix="/gateway")
+gateway_bp = Blueprint("gateway_bp", __name__, url_prefix="/api/gateway")
 
 # region air_company gateway
 @gateway_bp.route("/air_company/getAll", methods=["GET"])
@@ -343,6 +343,7 @@ def generate_report():
 @jwt_required()
 @roles_required("ADMINISTRATOR")
 def get_all_flights_admin():
+    print(get_jwt())
     try:
         response = requests.get(
             f"{Config.FLIGHT_SERVICE_URL}/flights/admin/getAll"

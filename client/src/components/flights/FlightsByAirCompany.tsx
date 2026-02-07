@@ -5,7 +5,12 @@ import { flightApi } from "../../api_services/flight/FlightApiService";
 // doraditi
 export default function FlightsByAirCompany({ airCompanyId }: { airCompanyId: number }) {
     const [flights, setFlights] = useState<Flight[]>([]);
-    useEffect(() => { flightApi.getFlightsByAirCompany(airCompanyId).then(setFlights).catch(console.error); }, [status]);
+    
+    useEffect(() => {
+        flightApi.getFlightsByAirCompany(airCompanyId)
+            .then(setFlights)
+            .catch(console.error);
+    }, [airCompanyId]);
 
     return (
         <div>

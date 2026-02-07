@@ -23,6 +23,7 @@ def getAllFlights():
                 "departureAirport":f.departureAirport,
                 "arrivalAirport":f.arrivalAirport,
                 "ticketPrice":f.ticketPrice,
+                "approvalStatus": f.approvalStatus.name,
             }for f in flights
         ])
     except Exception as e:

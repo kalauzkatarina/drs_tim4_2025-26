@@ -3,7 +3,7 @@ import type { IFlightAPIService } from "./IFlightAPIService";
 import type { Flight } from "../../models/flight/FlightDto";
 import type { FlightCreateDto } from "../../models/flight/FlightCreateDto";
 
-const API_URL = `${import.meta.env.VITE_GATEWAY_URL}/gateway/flights`;
+const API_URL = `${import.meta.env.VITE_GATEWAY_URL}gateway/flights`;
 
 export const flightApi: IFlightAPIService = {
     async getAllFlights(): Promise<Flight[]> {
@@ -19,11 +19,19 @@ export const flightApi: IFlightAPIService = {
         }
     },
     async getAllFlightsAdmin(): Promise<Flight[]> {
-        const token = localStorage.getItem("token");
-        const res = await axios.get<Flight[]>(`${API_URL}/admin/getAll`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return res.data;
+        try{
+            const token = localStorage.getItem("token");
+            const res = await axios.get<Flight[]>(`${API_URL}/admin/getAll`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return res.data;
+        } catch (error){
+             let message = "Error while deleting flight.";
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.message || message;
+            }
+            throw new Error(message);
+        }
     },
     async getFlightById(id: number): Promise<Flight> {
         try {
@@ -112,37 +120,70 @@ export const flightApi: IFlightAPIService = {
         }
     },
     async approveFlight(id: number): Promise<Flight> {
-        const token = localStorage.getItem("token");
-        const res = await axios.put<Flight>(`${API_URL}/approve/${id}`, {}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return res.data;
+        try{
+            const token = localStorage.getItem("token");
+            const res = await axios.put<Flight>(`${API_URL}/approve/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return res.data;
+        } catch (error) {
+            let message = "Error while deleting flight.";
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.message || message;
+            }
+            throw new Error(message);
+        }
     },
 
     async rejectFlight(id: number, reason: string): Promise<Flight> {
-        const token = localStorage.getItem("token");
-        const res = await axios.put<Flight>(
-            `${API_URL}/reject/${id}`,
-            { reason },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        return res.data;
+        try{
+            const token = localStorage.getItem("token");
+            const res = await axios.put<Flight>(
+                `${API_URL}/reject/${id}`,
+                { reason },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return res.data;
+        } catch (error) {
+            let message = "Error while deleting flight.";
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.message || message;
+            }
+            throw new Error(message);
+        }
     },
 
     async cancelFlight(id: number): Promise<Flight> {
-        const token = localStorage.getItem("token");
-        const res = await axios.put<Flight>(`${API_URL}/cancel/${id}`, {}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return res.data;
+        try {
+            const token = localStorage.getItem("token");
+            const res = await axios.put<Flight>(`${API_URL}/cancel/${id}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return res.data;
+        } catch (error) {
+            let message = "Error while deleting flight.";
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.message || message;
+            }
+            throw new Error(message);
+        }
     },
 
-    async generateReport(tabName: string, email: string): Promise<void> {
-        const token = localStorage.getItem("token");
-        await axios.post(
-            `${API_URL}/generate-report`,
-            { tabName, email },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+    async generateReport(tabName: string): Promise<void> {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.post(
+                `${API_URL}/generate-report`,
+                { tabName },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (error) {
+            let message = "Error while deleting flight.";
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.message || message;
+            }
+            throw new Error(message);
+        }
     }
+
 };

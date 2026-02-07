@@ -1,42 +1,38 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { FlightUpdateDto } from "../../models/flight/FlightUpdateDto";
 import { flightApi } from "../../api_services/flight/FlightApiService";
+import type { FlightCreateDto } from "../../models/flight/FlightCreateDto";
+import FlightForm from "./FlightForm";
 
 export default function EditFlight() {
-    const { id } = useParams();
-    const nav = useNavigate();
-    const [dto, setDto] = useState<FlightUpdateDto>({});
+  const { id } = useParams();
+  const nav = useNavigate();
+  const [dto, setDto] = useState<FlightCreateDto | null>(null);
 
-    useEffect(() => {
-        if (!id) return;
-        flightApi.getFlightById(Number(id)).then(f => setDto(f)).catch(console.error);
-    }, [id]);
+  useEffect(() => {
+    if (!id) return;
+    flightApi.getFlightById(Number(id)).then(setDto);
+  }, [id]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setDto({ ...dto, [name]: name.includes("Duration") || name === "ticketPrice" || name === "airCompanyId" ? Number(value) : value });
-    };
+  if (!dto) return null;
 
-    const save = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!id) return;
-        flightApi.updateFlight(Number(id), dto).then(() => nav("/flights"));
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDto({ ...dto, [name]: isNaN(Number(value)) ? value : Number(value) });
+  };
 
-    return (
-        <div>
-            <h2>Edit Flight {id}</h2>
-            <form onSubmit={save}>
-                {Object.keys(dto).map(k => (
-                    <div key={k}>
-                        <label>{k}</label>
-                        <input name={k} value={dto[k as keyof FlightUpdateDto] ?? ""} onChange={handleChange}/>
-                    </div>
-                ))}
-                <button type="submit">Update</button>
-                <button type="button" onClick={() => nav(-1)}>Cancel</button>
-            </form>
-        </div>
-    );
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await flightApi.updateFlight(Number(id), dto);
+    nav("/flights");
+  };
+
+  return (
+    <FlightForm
+      title={`Edit Flight #${id}`}
+      dto={dto}
+      onChange={handleChange}
+      onSubmit={save}
+    />
+  );
 }
