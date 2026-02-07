@@ -338,4 +338,4 @@ def generate_report():
 
     except Exception as error:
         return jsonify({"message": f"Server: {error}"}), 500
-# end region
+# endregion

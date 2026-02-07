@@ -1,12 +1,10 @@
 from flask import Flask
 from .config import Config
-from .extensions import mail,celery
+from .extensions import celery
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-
-    mail.init_app(app)
 
     celery.conf.update(
         broker_url = app.config['CELERY_BROKER_URL'],
