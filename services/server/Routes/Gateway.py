@@ -338,4 +338,88 @@ def generate_report():
 
     except Exception as error:
         return jsonify({"message": f"Server: {error}"}), 500
+    
+@gateway_bp.route("/flights/admin/getAll", methods=["GET"])
+@jwt_required()
+@roles_required("ADMINISTRATOR")
+def get_all_flights_admin():
+    try:
+        response = requests.get(
+            f"{Config.FLIGHT_SERVICE_URL}/flights/admin/getAll"
+        )
+
+        if response.status_code != 200:
+            return jsonify({"message": "Server error"}), response.status_code
+
+        return jsonify(response.json()), 200
+
+    except Exception as error:
+        return jsonify({"message": f"Server error: {error}"}), 500
+
+@gateway_bp.route("/flights/approve/<int:id>", methods=["PUT"])
+@jwt_required()
+@roles_required("ADMINISTRATOR")
+def approve_flight(id):
+    try:
+        response = requests.put(
+            f"{Config.FLIGHT_SERVICE_URL}/flights/approve/{id}"
+        )
+
+        if response.status_code != 200:
+            return jsonify({"message": response.text}), response.status_code
+
+        redis_client.delete("flights:all")
+        redis_client.delete(f"flight:{id}")
+
+        return jsonify(response.json()), 200
+
+    except Exception as error:
+        return jsonify({"message": f"Server error: {error}"}), 500
+
+@gateway_bp.route("/flights/reject/<int:id>", methods=["PUT"])
+@jwt_required()
+@roles_required("ADMINISTRATOR")
+def reject_flight(id):
+    try:
+        reason = request.json.get("reason")
+
+        if not reason:
+            return jsonify({"message": "Rejection reason is required"}), 400
+
+        response = requests.put(
+            f"{Config.FLIGHT_SERVICE_URL}/flights/reject/{id}",
+            json={"reason": reason}
+        )
+
+        if response.status_code != 200:
+            return jsonify({"message": response.text}), response.status_code
+
+        redis_client.delete("flights:all")
+        redis_client.delete(f"flight:{id}")
+
+        return jsonify(response.json()), 200
+
+    except Exception as error:
+        return jsonify({"message": f"Server error: {error}"}), 500
+
+@gateway_bp.route("/flights/cancel/<int:id>", methods=["PUT"])
+@jwt_required()
+@roles_required("ADMINISTRATOR")
+def cancel_flight(id):
+    try:
+        response = requests.put(
+            f"{Config.FLIGHT_SERVICE_URL}/flights/cancel/{id}"
+        )
+
+        if response.status_code != 200:
+            return jsonify({"message": response.text}), response.status_code
+
+        redis_client.delete("flights:all")
+        redis_client.delete(f"flight:{id}")
+
+        return jsonify(response.json()), 200
+
+    except Exception as error:
+        return jsonify({"message": f"Server error: {error}"}), 500
+
 # endregion

@@ -33,6 +33,9 @@ class FlightsService:
 
         flight = Flights.query.get(flight_id)
 
+        if not flight:
+            return None
+
         flight_data = flight.to_dict()
 
         redis_client.set(cache_key, json.dumps(flight_data),ex=300)
@@ -142,6 +145,8 @@ class FlightsService:
     @staticmethod
     def approve(flight_id):
         flight = Flights.query.get(flight_id)
+        if not flight:
+            return None
         flight.approvalStatus = FlightApprovalStatus.APPROVED
         flight.rejectionReason = None
         db.session.commit()
@@ -150,6 +155,8 @@ class FlightsService:
     @staticmethod
     def reject(flight_id, reason):
         flight = Flights.query.get(flight_id)
+        if not flight:
+            return None
         flight.approvalStatus = FlightApprovalStatus.REJECTED
         flight.rejectionReason = reason
         db.session.commit()
@@ -158,7 +165,8 @@ class FlightsService:
     @staticmethod
     def cancel(flight_id):
         flight = Flights.query.get(flight_id)
-
+        if not flight:
+            return None
         status = FlightStatusService.get_status(flight)
         if status in ["IN_PROGRESS", "FINISHED"]:
             raise Exception("Flight cannot be cancelled")
