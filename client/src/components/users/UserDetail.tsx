@@ -73,6 +73,11 @@ export default function UserDetails() {
         >
           Change Profile
         </button>
+        <button
+            className="mt-5 w-full rounded-2xl bg-[#00aeef] py-4 text-xs font-black text-white hover:bg-[#0094cc] transition-all shadow-xl shadow-sky-500/20 active:scale-[0.98] uppercase tracking-[0.15em]"
+        >
+          Add money to account
+        </button>
       </div>
     </div>
   );

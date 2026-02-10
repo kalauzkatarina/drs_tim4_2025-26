@@ -39,8 +39,8 @@ def get_by_user(userId):
     try:
         tickets = BougthTicketsService.get_all_by_user(userId)
 
-        if not tickets:
-            return jsonify({"message":f'Ticket with {userId} does not exist'}),404
+        if tickets == []:
+            return jsonify({"message":f'Ticket with {userId} does not exist'}),200
 
         return jsonify([
             {

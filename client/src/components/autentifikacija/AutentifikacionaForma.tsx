@@ -148,11 +148,11 @@ export default function AutentifikacionaForma({ authApi, onLoginSuccess }: AuthF
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">First Name</label>
-                      <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none" required />
+                      <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none text-slate-800" required />
                     </div>
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Last Name</label>
-                      <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none" required />
+                      <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none text-slate-800" required />
                     </div>
                   </div>
 
@@ -160,8 +160,9 @@ export default function AutentifikacionaForma({ authApi, onLoginSuccess }: AuthF
                     <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Date of Birth</label>
                     <Flatpickr
                       value={dateOfBirth}
-                      onChange={(dates) => dates.length > 0 && setDateOfBirth(dates[0].toISOString().split("T")[0])}
-                      className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none bg-transparent"
+                      options={{dateFormat:"Y-m-d"}}
+                      onChange={([date]) => setDateOfBirth(date.toISOString().split("T")[0])}
+                      className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none bg-transparent text-slate-800"
                       placeholder="YYYY-MM-DD"
                     />
                   </div>
@@ -169,25 +170,25 @@ export default function AutentifikacionaForma({ authApi, onLoginSuccess }: AuthF
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Gender</label>
-                      <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none bg-white">
+                      <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none bg-white text-slate-800">
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                       </select>
                     </div>
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">State</label>
-                      <input type="text" value={state} onChange={(e) => setState(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none" required />
+                      <input type="text" value={state} onChange={(e) => setState(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none text-slate-800" required />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Street Name</label>
-                      <input type="text" value={streetName} onChange={(e) => setStreetName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none" required />
+                      <input type="text" value={streetName} onChange={(e) => setStreetName(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none text-slate-800" required />
                     </div>
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-1">No.</label>
-                      <input type="text" value={streetNumber} onChange={(e) => setStreetNumber(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none" required />
+                      <input type="text" value={streetNumber} onChange={(e) => setStreetNumber(e.target.value)} className="w-full border-b border-slate-200 focus:border-sky-500 py-2 outline-none text-slate-800" required />
                     </div>
                   </div>
                 </div>

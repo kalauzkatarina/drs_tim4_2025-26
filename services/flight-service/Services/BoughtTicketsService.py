@@ -44,7 +44,13 @@ class BougthTicketsService:
 
     @staticmethod
     def get_all_by_user(userId):
-        return BoughtTickets.query.filter_by(userId=userId).all()
+
+        userTickets = BoughtTickets.query.filter_by(userId=userId).all()
+
+        if userTickets == []:
+            return []
+
+        return userTickets
 
     @staticmethod
     def get_all_by_flight(flightId):

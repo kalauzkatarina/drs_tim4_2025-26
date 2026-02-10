@@ -20,6 +20,8 @@ export default function TicketList() {
 
         const actualFlights = Array.isArray(flightsData) ? flightsData : (flightsData as any).data || [];
 
+        const actualTickets = Array.isArray(ticketsData) ? ticketsData : (ticketsData as any).data || [];
+
         const map: Record<number, string> = {};
         actualFlights.forEach((f: Flight) => {
         const from = f.departureAirport || "Unknown";
@@ -28,7 +30,7 @@ export default function TicketList() {
         });
         
         setFlightMap(map);
-        setTickets(ticketsData);
+        setTickets(actualTickets);
     } catch (err) {
         console.error("Greška u loadData:", err);
     }
@@ -64,7 +66,7 @@ export default function TicketList() {
           </thead>
 
           <tbody className="divide-y divide-white/5">
-            {tickets.length === 0 ? (
+            {tickets && tickets.length === 0 ? (
               <tr>
                 <td colSpan={5} className="text-center py-20 text-white/40 italic">
                   No tickets found.
